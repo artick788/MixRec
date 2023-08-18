@@ -9,7 +9,7 @@ COOKIE_FOLDER: str = "./Cookie/no_cookies.crx"
 TIME_OUT: int = 30
 
 
-def get_song_attrs(artist: str, track: str):
+def get_song_attrs(artist: str, track: str) -> dict:
     tunebat_url = "https://tunebat.com/Search?q=" + artist + "%20" + track
 
     options = webdriver.ChromeOptions()
@@ -36,7 +36,7 @@ def get_song_attrs(artist: str, track: str):
         for i in range(0, len(content), 2):
             values[content[i + 1]] = content[i]
 
-        # get other values as well
+        # get other values as well such as Key, BPM, etc.
         content = driver.find_element(By.CLASS_NAME, "_5z2l5").text
         content = content.split("\n")
         for i in range(0, len(content), 2):
@@ -44,10 +44,11 @@ def get_song_attrs(artist: str, track: str):
 
         return values
 
-
     except TimeoutException:
         print("Loading took too much time!")
         driver.quit()
 
     finally:
         driver.quit()
+
+    return {}
