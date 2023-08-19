@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {Box, TextField, Typography, Grid, Button} from "@mui/material";
+import axios from "axios";
 
 
 export default function Downloader() {
@@ -10,7 +11,22 @@ export default function Downloader() {
   const [genre, setGenre] = useState("");
 
   const download = () => {
+    const body = {
+      url: url,
+      artist: artist,
+      title: title,
+      album: album,
+      genre: genre,
+      option: 'download'
+    };
 
+    axios.post('http://localhost:8000/apiv1/song/', body)
+      .then((response) => {
+        console.log(response);
+        }).
+      catch((error) => {
+        console.log(error);
+      });
   }
 
   return (
