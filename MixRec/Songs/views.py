@@ -95,3 +95,13 @@ class SongEP(ModelViewSet):
         response['Song'] = song_serialized.data
         return response
 
+    @catch_exceptions
+    def list(self, request, *args, **kwargs):
+        response: dict = dict()
+        query = request.data.get("query", None)
+        if query is not None:
+            pass # TODO: implement search using TF-IDF
+        else:
+            response['Songs'] = SongSerializer(Song.objects.all(), many=True, context={'request': request}).data
+        return response
+
