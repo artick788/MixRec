@@ -27,12 +27,18 @@ def get_tunebat_data(artist: str, track: str) -> dict:
 
         # Click on the first song
         first_song.click()
-        time.sleep(1.0)  # redirect
 
-        # get numeric values
-        content = driver.find_element(By.CLASS_NAME, "dr-ag").text
-        content = content.split("\n")
+        content: list = []
+        while len(content) < 18:    # Wait for the page to fetch the data, 18 is the number of attributes expected
+            time.sleep(1.0)  # redirect
+
+            # get numeric values
+            text = driver.find_element(By.CLASS_NAME, "dr-ag").text
+            content = text.split("\n")
+
+
         values: dict = {}
+        print("Content Tunebat scraper: ", len(content))
         for i in range(0, len(content), 2):
             values[content[i + 1]] = content[i]
 
