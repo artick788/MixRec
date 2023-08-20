@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {Box, TextField, Typography, Grid, Button} from "@mui/material";
 import axios from "axios";
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 export default function Downloader() {
@@ -10,6 +11,7 @@ export default function Downloader() {
   const [album, setAlbum] = useState("");
   const [description, setDescription] = useState("");
   const [genre, setGenre] = useState("");
+  const [downloading, setDownloading] = useState(false);
 
   const download = () => {
     const body = {
@@ -22,13 +24,54 @@ export default function Downloader() {
       option: 'download'
     };
 
+    if (url === "") {
+      alert("Please enter a url");
+      return;
+    }
+    if (artist === "") {
+      alert("Please enter an artist");
+      return;
+    }
+    if (title === "") {
+      alert("Please enter a title");
+      return;
+    }
+
+    setDownloading(true);
     axios.post('http://localhost:8000/apiv1/song/', body)
       .then((response) => {
         console.log(response);
+        setDownloading(false);
         }).
       catch((error) => {
         console.log(error);
+        setDownloading(false);
       });
+    setUrl("");
+    setArtist("");
+    setTitle("");
+    setAlbum("");
+    setGenre("");
+    setDescription("");
+  }
+
+  const spinnerOrButton = () => {
+    if (!downloading){
+      return (
+        <Button
+          variant="contained"
+          sx={{ width: '30%' }}
+          onClick={download}
+        >
+          Download
+        </Button>
+      )
+    }
+    else{
+      return (
+        <CircularProgress />
+      )
+    }
   }
 
   return (
@@ -115,13 +158,9 @@ export default function Downloader() {
             </Grid>
 
             <Grid item xs={12}>
-              <Button
-                variant="contained"
-                sx={{ width: '30%' }}
-                onClick={download}
-              >
-                Download
-              </Button>
+              {
+                spinnerOrButton()
+              }
             </Grid>
           </Grid>
         </Box>

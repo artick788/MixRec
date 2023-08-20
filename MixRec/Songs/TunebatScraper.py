@@ -36,23 +36,24 @@ def get_tunebat_data(artist: str, track: str) -> dict:
             text = driver.find_element(By.CLASS_NAME, "dr-ag").text
             content = text.split("\n")
 
-
         values: dict = {}
-        print("Content Tunebat scraper: ", len(content))
         for i in range(0, len(content), 2):
             values[content[i + 1]] = content[i]
 
         # get other values as well such as Key, BPM, etc.
-        content = driver.find_element(By.CLASS_NAME, "_5z2l5").text
-        content = content.split("\n")
+        text = driver.find_element(By.CLASS_NAME, "_5z2l5").text
+        content = text.split("\n")
         for i in range(0, len(content), 2):
             values[content[i + 1]] = content[i]
 
         return values
 
     except TimeoutException:
-        print("Loading took too much time!")
+        print("[TuneBatScraper]: Loading took too much time!")
         driver.quit()
+
+    except Exception as e:
+        raise Exception("[TuneBatScraper]: Failed to get song attributes: " + str(e))
 
     finally:
         driver.quit()
