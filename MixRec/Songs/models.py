@@ -9,7 +9,8 @@ class Song(models.Model):
 
     title = models.CharField(max_length=128, null=False, blank=False)
     artist = models.CharField(max_length=128, null=False, blank=False)
-    album = models.CharField(max_length=512, null=True, blank=True)
+    description = models.CharField(max_length=512, null=True, blank=True)
+    album = models.CharField(max_length=128, null=True, blank=True)
     year = models.IntegerField(null=True, blank=True)
     genre = models.CharField(max_length=512, null=True, blank=True)
     duration = models.CharField(max_length=20, null=True, blank=True)

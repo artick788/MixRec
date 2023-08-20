@@ -8,6 +8,7 @@ export default function Downloader() {
   const [artist, setArtist] = useState("");
   const [title, setTitle] = useState("");
   const [album, setAlbum] = useState("");
+  const [description, setDescription] = useState("");
   const [genre, setGenre] = useState("");
 
   const download = () => {
@@ -17,6 +18,7 @@ export default function Downloader() {
       title: title,
       album: album,
       genre: genre,
+      description: description,
       option: 'download'
     };
 
@@ -81,23 +83,34 @@ export default function Downloader() {
 
             <Grid item xs={12}>
               <TextField
-                id="album"
-                label="Album"
-                variant="outlined"
-                value={album}
-                sx={{ width: '30%' }}
-                onChange={(event) => setAlbum(event.target.value)}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
                 id="genre"
                 label="Genre"
                 variant="outlined"
                 value={genre}
                 sx={{ width: '30%' }}
                 onChange={(event) => setGenre(event.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                id="description"
+                label="Description"
+                variant="outlined"
+                value={description}
+                sx={{ width: '30%' }}
+                onChange={(event) => setDescription(event.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                id="album"
+                label="Album"
+                variant="outlined"
+                value={album}
+                sx={{ width: '30%' }}
+                onChange={(event) => setAlbum(event.target.value)}
               />
             </Grid>
 

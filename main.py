@@ -1,6 +1,4 @@
-from TunebatScraper.TunebatScraper import get_song_attrs
-
+from Uploader import upload
 
 if __name__ == '__main__':
-    print(get_song_attrs("Chase Status", "Baddadan"))
-
+    upload("E:\\OneDrive\\Music\\DJ\\DnB\\Sub Focus - Alarm.mp3")

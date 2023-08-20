@@ -29,13 +29,12 @@ def download_youtube(url: str, file_path: str):
                 stream = ffmpeg.input(temp_name + '.webm')
                 stream = ffmpeg.output(stream, temp_name + "." + 'mp3')
 
-                # rename
-                os.rename(temp_name + ".mp3", file_path)
-                os.remove(temp_name + ".mp3")
-
         except Exception as e:
             print("Download failed: " + str(e) + " \nTries: " + str(tries))
 
         except:
             print("Download failed: no further details, \nTries: " + str(tries))
         tries -= 1
+
+    # rename
+    os.rename(temp_name + ".mp3", file_path)
