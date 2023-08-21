@@ -12,6 +12,7 @@ export default function Downloader() {
   const [description, setDescription] = useState("");
   const [genre, setGenre] = useState("");
   const [downloading, setDownloading] = useState(false);
+  const [recreatingIndex, setRecreatingIndex] = useState(false);
 
   const download = () => {
     const body = {
@@ -55,7 +56,17 @@ export default function Downloader() {
     setDescription("");
   }
 
-  const spinnerOrButton = () => {
+  const recreateIndex = () => {
+    axios.post('http://localhost:8000/apiv1/search/', {})
+      .then((response) => {
+        console.log(response);
+        })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const spinnerOrDownload = () => {
     if (!downloading){
       return (
         <Button
@@ -74,13 +85,31 @@ export default function Downloader() {
     }
   }
 
+  const spinnerOrRecreatingIndex = () => {
+    if (!recreatingIndex){
+      return (
+        <Button
+          variant="contained"
+          sx={{ width: '30%' }}
+          onClick={recreateIndex}
+        >
+          Recreate Index
+        </Button>
+      )
+    }
+    else{
+      return (
+        <CircularProgress />
+      )
+    }
+  }
+
   return (
     <div>
       <div style={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '100vh', // Ensures the div covers the full viewport height
       }}>
         <Box sx={{ width: '100%' }}>
           <Grid container spacing={2}>
@@ -159,7 +188,12 @@ export default function Downloader() {
 
             <Grid item xs={12}>
               {
-                spinnerOrButton()
+                spinnerOrDownload()
+              }
+            </Grid>
+            <Grid item xs={12}>
+              {
+                spinnerOrRecreatingIndex()
               }
             </Grid>
           </Grid>
