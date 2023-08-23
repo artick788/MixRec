@@ -13,6 +13,8 @@ import {IconButton} from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CircularProgress from "@mui/material/CircularProgress";
 
+import ChangeSongPropsDialog from "./ChangeSongPropsDialog";
+
 export default function SongCard(props) {
   const [expanded, setExpanded] = useState(false);
   const [song, setSong] = useState(props.song);
@@ -36,6 +38,9 @@ export default function SongCard(props) {
             {song.score !== undefined && <p>Score: {song.score.toFixed(2)}</p>}
           </div>
           <Divider />
+          <div style={{margin: 5}}>
+             <ChangeSongPropsDialog song={song} setSong={setSong} />
+          </div>
           <div style={{textAlign: 'left'}}>
             <Grid container spacing={2}>
               <Grid item xs={6}>

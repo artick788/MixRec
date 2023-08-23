@@ -96,9 +96,18 @@ class SongEP(ModelViewSet):
         return response
 
     @catch_exceptions
+    def partial_update(self, request, *args, **kwargs):
+        super().partial_update(request, *args, **kwargs)
+
+        song = Song.objects.get(song_id=kwargs['pk'])
+        song_serialized = SongSerializer(song, context={'request': request})
+        response: dict = dict()
+        response['Song'] = song_serialized.data
+        return response
+
+    @catch_exceptions
     def list(self, request, *args, **kwargs):
         response: dict = dict()
-        query = request.data.get("query", None)
         response['Songs'] = SongSerializer(Song.objects.all(), many=True, context={'request': request}).data
         return response
 

@@ -123,7 +123,7 @@ export default function Downloader() {
             <Grid item xs={12}>
               <TextField
                 id="url"
-                label="URL"
+                label="Youtube URL"
                 variant="outlined"
                 value={url}
                 sx={{ width: '30%' }}
