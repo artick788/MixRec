@@ -97,8 +97,16 @@ class SongEP(ModelViewSet):
 
     @catch_exceptions
     def partial_update(self, request, *args, **kwargs):
-        super().partial_update(request, *args, **kwargs)
+        song = Song.objects.get(song_id=kwargs['pk'])
+        # if the genre is changed, move the file to the new genre folder
+        if song.genre != request.data["genre"]:
+            old_file_name = song.file_location
+            new_file_name = settings.MUSIC_DIR + "/" + request.data["genre"] + "/" + song.artist + " - " + song.title + ".mp3"
+            os.rename(old_file_name, new_file_name)
+            song.file_location = new_file_name
+            song.save()
 
+        super().partial_update(request, *args, **kwargs)
         song = Song.objects.get(song_id=kwargs['pk'])
         song_serialized = SongSerializer(song, context={'request': request})
         response: dict = dict()

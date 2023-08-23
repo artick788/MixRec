@@ -1,5 +1,14 @@
 import React from "react";
-import {Box, Button, Grid, TextField, Typography} from "@mui/material";
+import {Box,
+  Button,
+  Grid,
+  TextField,
+  Typography,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+} from "@mui/material";
 import axios from "axios";
 import SongCard from "./SongCard";
 
@@ -7,8 +16,9 @@ import SongCard from "./SongCard";
 export default function Searcher() {
   const [query, setQuery] = React.useState("" );
   const [k, setK] = React.useState(10);
+  const [method, setMethod] = React.useState("TF-IDF");
+
   const [musicList, setMusicList] = React.useState([]);
-  const [scores, setScores] = React.useState([]);
 
   const submit = () => {
     if (query === "" || k < 1) {
@@ -16,7 +26,8 @@ export default function Searcher() {
     }
     const body = {
       query: query,
-      k: k
+      k: k,
+      method: method
     }
     axios.post('http://localhost:8000/apiv1/search/', body)
       .then((response) => {
@@ -71,6 +82,21 @@ export default function Searcher() {
                 sx={{ width: '30%' }}
                 onChange={(event) => setK(event.target.value)}
               />
+            </Grid>
+            <Grid item xs={12} >
+              <FormControl sx={{ width: '30%' }}>
+                <InputLabel id="method-picker">Method</InputLabel>
+                <Select
+                  labelId="method-picker"
+                  id="method-picker"
+                  value={method}
+                  label="Method"
+                  onChange={(e) => setMethod(e.target.value)}
+                >
+                  <MenuItem value="TF-IDF">TF-IDF</MenuItem>
+                  <MenuItem value="LSI">LSI</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <Button

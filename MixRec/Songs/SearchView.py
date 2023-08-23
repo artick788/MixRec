@@ -8,15 +8,24 @@ from .models import Song
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
+from gensim import corpora, models, similarities
+
 import joblib
 
 
 class Index:
     def __init__(self):
         self.concatenations: [str] = []
+        self.tokenized_concatenations: [[str]] = []
         self.song_ids = []
+        # for TF.IDF calculation
         self.vectorizer = TfidfVectorizer(analyzer='word', stop_words='english', lowercase=True)
         self.tfidf_matrix = None
+        # for LSI calculation
+        self.dictionary = None      # for mapping between words and their integer ids
+        self.lsi_model = None       # for LSI calculation
+        self.lsi_index = None      # for dimensionality reduction
+
 
 """
 The biggest bullshit ever. As it is seemingly impossible to provide data using a get request, I have to use a post request.
@@ -30,32 +39,45 @@ class SearchEP(ModelViewSet):
     @catch_exceptions
     def create(self, request, *args, **kwargs):
         query = request.data.get("query", None)
-        k = request.data.get("k", 10)
+        method = request.data.get("method", "TF-IDF")
+        k = int(request.data.get("k", 10))
         if query is None:
             raise Exception("No query provided")
 
-        # load tf-idf matrix
+        # index
         index: Index = joblib.load(settings.INDEX_PATH)
+        song_ids = []
+        scores = []
+        if method == "TF-IDF":        # process query
+            tfidf_query = index.vectorizer.transform([query])
 
-        # process query
-        tfidf_query = index.vectorizer.transform([query])
+            # calculate cosine similarity
+            cosine_similarities = linear_kernel(tfidf_query, index.tfidf_matrix).flatten()
 
-        # calculate cosine similarity
-        cosine_similarities = linear_kernel(tfidf_query, index.tfidf_matrix).flatten()
+            # get top k results
+            related_docs_indices = cosine_similarities.argsort()[:-k - 1:-1]
 
-        # get top k results
-        related_docs_indices = cosine_similarities.argsort()[:-k - 1:-1]
+            # get song ids
+            song_ids = [index.song_ids[i] for i in related_docs_indices]
+            scores = cosine_similarities[related_docs_indices].tolist()
 
-        # get song ids
-        song_ids = [index.song_ids[i] for i in related_docs_indices]
+        elif method == "LSI":
+            query_bow = index.dictionary.doc2bow(query.lower().split())
+            query_lsi = index.lsi_model[query_bow]
+            similars = index.lsi_index[query_lsi]
+            top_k = sorted(enumerate(similars), key=lambda item: -item[1])[:k]
+            song_ids = [index.song_ids[i[0]] for i in top_k]
+            scores = [i[1] for i in top_k]
 
         # get songs
         songs = Song.objects.filter(song_id__in=song_ids)
         response: dict = {
             "Songs": SongSerializer(songs, many=True, context={'request': request}).data,
-            "Scores": cosine_similarities[related_docs_indices].tolist()
+            "Scores": scores
         }
         return response
+
+
 
 
     @catch_exceptions
@@ -63,17 +85,37 @@ class SearchEP(ModelViewSet):
         # Will recreate the search index for all songs
         response: dict = {}
 
-        # collect artist, title, album, genre, description from the songs and put them in a single string
+        # collect artist, title, album, genre, description from the songs and put them in a single string to be used
+        # for tf-idf
         songs = Song.objects.all()
         new_index = Index()
+
         for song in songs:
+            # remove all non-alphanumeric characters
+            artist = song.artist.replace(",", "").replace("(", "").replace(")", "").lower()
+            title = song.title.replace(",", "").replace("(", "").replace(")", "").lower()
+            album = song.album.replace(",", "").replace("(", "").replace(")", "").lower()
+            genre = song.genre.replace(",", "").replace("(", "").replace(")", "").lower()
+            description = song.description.replace(",", "").replace("(", "").replace(")", "").lower()
             new_index.concatenations.append(
-                song.artist + " " + song.title + " " + song.album + " " + song.genre + " " + song.description + " " + song.camelot_key)
+                artist + " " + title + " " + album + " " + genre + " " + description + " " + song.camelot_key)
+            new_index.tokenized_concatenations.append(
+                artist.split() + title.split() + album.split() + genre.split() + description.split() + song.camelot_key.split()
+            )
+
             new_index.song_ids.append(song.song_id)
 
+        # Index for TF-IDF
         new_index.tfidf_matrix = new_index.vectorizer.fit_transform(new_index.concatenations)
 
-        # save tf-idf matrix
+        # Index for SVD
+        new_index.dictionary = corpora.Dictionary(new_index.tokenized_concatenations)
+        corpus = [new_index.dictionary.doc2bow(text) for text in new_index.tokenized_concatenations]
+        new_index.lsi_model = models.LsiModel(corpus, id2word=new_index.dictionary, num_topics=len(songs))
+        new_index.lsi_index = similarities.MatrixSimilarity(new_index.lsi_model[corpus])
+
+
+        # save index
         joblib.dump(new_index, settings.INDEX_PATH)
 
         return response
