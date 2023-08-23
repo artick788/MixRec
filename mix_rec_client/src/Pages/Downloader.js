@@ -57,7 +57,7 @@ export default function Downloader() {
   }
 
   const recreateIndex = () => {
-    axios.post('http://localhost:8000/apiv1/search/', {})
+    axios.get('http://localhost:8000/apiv1/search/', {})
       .then((response) => {
         console.log(response);
         })

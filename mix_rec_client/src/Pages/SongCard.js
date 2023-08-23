@@ -31,8 +31,9 @@ export default function SongCard(props) {
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Divider />
-          <div style={{display: 'flex' }}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <p>Description: {song.description}</p>
+            {song.score !== undefined && <p>Score: {song.score.toFixed(2)}</p>}
           </div>
           <Divider />
           <div style={{textAlign: 'left'}}>
