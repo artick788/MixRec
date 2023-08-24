@@ -26,6 +26,7 @@ export default function ChangeSongPropsDialog(props) {
         console.log(response);
         setSong(response.data['Song'])
         props.setSong(response.data['Song']);
+        setIsOpen(false);
       })
       .catch((error) => {
         console.log(error);

@@ -97,10 +97,18 @@ class SearchEP(ModelViewSet):
             album = song.album.replace(",", "").replace("(", "").replace(")", "").lower()
             genre = song.genre.replace(",", "").replace("(", "").replace(")", "").lower()
             description = song.description.replace(",", "").replace("(", "").replace(")", "").lower()
-            new_index.concatenations.append(
-                artist + " " + title + " " + album + " " + genre + " " + description + " " + song.camelot_key)
+
+            doc = artist + " " + title + " " + album + " " + genre + " " + description + " " + song.camelot_key
+            if song.popularity > 60:
+                doc += " " + "popular"
+            if song.energy > 75 and song.danceability > 75:
+                doc += " " + "danceable" + " " + "hype"
+            elif song.energy > 75 and song.speechiness > 20:
+                doc += " " + "hype"
+
+            new_index.concatenations.append(doc)
             new_index.tokenized_concatenations.append(
-                artist.split() + title.split() + album.split() + genre.split() + description.split() + song.camelot_key.split()
+                doc.split()
             )
 
             new_index.song_ids.append(song.song_id)
