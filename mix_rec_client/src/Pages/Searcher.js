@@ -17,6 +17,7 @@ export default function Searcher() {
   const [query, setQuery] = React.useState("" );
   const [k, setK] = React.useState(10);
   const [method, setMethod] = React.useState("TF-IDF");
+  const [similarity, setSimilarity] = React.useState("Cosine");
 
   const [musicList, setMusicList] = React.useState([]);
 
@@ -27,14 +28,15 @@ export default function Searcher() {
     const body = {
       query: query,
       k: k,
-      method: method
+      method: method,
+      similarity_method: similarity,
     }
     axios.post('http://localhost:8000/apiv1/search/', body)
       .then((response) => {
-        const songs = response.data['Songs'];
-        for (let i = 0; i < songs.length; i++) {
-          songs[i]['score'] = response.data['Scores'][i];
-        }
+       const songs = response.data['Songs'].map((song, index) => ({
+          ...song,
+          score: response.data['Scores'][index]
+        }));
         console.log(songs);
         // sort songs by score from high to low
         songs.sort((a, b) => {
@@ -98,6 +100,26 @@ export default function Searcher() {
                 </Select>
               </FormControl>
             </Grid>
+            {
+              method === "TF-IDF" && (
+                <Grid item xs={12}>
+                  <FormControl sx={{ width: '30%' }}>
+                    <InputLabel id="similarity-method-picker">Similarity Method</InputLabel>
+                    <Select
+                      labelId="similarity-method-picker"
+                      id="similarity-method-picker"
+                      value={similarity}
+                      label="Similarity Method"
+                      onChange={(e) => setSimilarity(e.target.value)}
+                    >
+                      <MenuItem value="Cosine">Cosine</MenuItem>
+                      <MenuItem value="Euclidean">Euclidean</MenuItem>
+                      <MenuItem value="Manhattan">Manhattan</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              )
+            }
             <Grid item xs={12}>
               <Button
                 variant="contained"

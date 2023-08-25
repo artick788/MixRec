@@ -35,7 +35,7 @@ export default function SongCard(props) {
           <Divider />
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <p>Description: {song.description}</p>
-            {song.score !== undefined && <p>Score: {song.score.toFixed(2)}</p>}
+            {song.score !== undefined && <p>Score: {song.score.toFixed(5)}</p>}
           </div>
           <Divider />
           <div style={{margin: 5}}>

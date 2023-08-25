@@ -5,7 +5,9 @@ from django.conf.urls.static import static
 
 from .SongView import SongEP
 from .SearchView import SearchEP
+from .IndexView import IndexEP
 
 router = DefaultRouter()
 router.register(r'song', SongEP, 'song')
 router.register(r'search', SearchEP, 'search')
+router.register(r'index', IndexEP, 'index')

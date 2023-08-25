@@ -12,7 +12,6 @@ export default function Downloader() {
   const [description, setDescription] = useState("");
   const [genre, setGenre] = useState("");
   const [downloading, setDownloading] = useState(false);
-  const [recreatingIndex, setRecreatingIndex] = useState(false);
 
   const download = () => {
     const body = {
@@ -75,25 +74,6 @@ export default function Downloader() {
           onClick={download}
         >
           Download
-        </Button>
-      )
-    }
-    else{
-      return (
-        <CircularProgress />
-      )
-    }
-  }
-
-  const spinnerOrRecreatingIndex = () => {
-    if (!recreatingIndex){
-      return (
-        <Button
-          variant="contained"
-          sx={{ width: '30%' }}
-          onClick={recreateIndex}
-        >
-          Recreate Index
         </Button>
       )
     }
@@ -189,11 +169,6 @@ export default function Downloader() {
             <Grid item xs={12}>
               {
                 spinnerOrDownload()
-              }
-            </Grid>
-            <Grid item xs={12}>
-              {
-                spinnerOrRecreatingIndex()
               }
             </Grid>
           </Grid>
