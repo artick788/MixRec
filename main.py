@@ -1,5 +1,5 @@
 from Uploader import upload, upload_directory
+from Evaluation.PrecisionRecall import precision_recall_curve
 
 if __name__ == '__main__':
-    # upload("E:\\OneDrive\\Music\\DJ\\DnB\\1991 - Tell Me Why.mp3")
-    upload_directory("E:\OneDrive\Music\DJ\EDM", "EDM")
+    precision_recall_curve()
