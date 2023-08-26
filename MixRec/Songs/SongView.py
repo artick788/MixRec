@@ -63,6 +63,7 @@ class SongEP(ModelViewSet):
         f.tags["TITLE"] = title
         f.tags["ALBUM"] = album
         f.tags["GENRE"] = genre
+        f.tags["COMMENT"] = description
         f.tags["BPM"] = info.get('BPM', "0")
         f.tags["TKEY"] = info.get('Key', "0")
         f.save()
@@ -99,11 +100,26 @@ class SongEP(ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         song = Song.objects.get(song_id=kwargs['pk'])
         # if the genre is changed, move the file to the new genre folder
-        if song.genre != request.data["genre"]:
+        if song.genre != request.data["genre"] or song.artist != request.data["artist"] or song.title != request.data["title"]:
+            # update file on disk
             old_file_name = song.file_location
-            new_file_name = settings.MUSIC_DIR + "/" + request.data["genre"] + "/" + song.artist + " - " + song.title + ".mp3"
+            new_file_name = settings.MUSIC_DIR + "/" + request.data["genre"] + "/" + request.data["artist"] + " - " + request.data["title"] + ".mp3"
             os.rename(old_file_name, new_file_name)
             song.file_location = new_file_name
+            song.save()
+
+            # update file metadata
+            f = taglib.File(new_file_name)
+            f.tags["ARTIST"] = request.data["artist"]
+            f.tags["TITLE"] = request.data["title"]
+            f.tags["GENRE"] = request.data["genre"]
+            f.save()
+
+        if song.description != request.data["description"]:
+            f = taglib.File(song.file_location)
+            f.tags["COMMENT"] = request.data["description"]
+            f.save()
+            song.description = request.data["description"]
             song.save()
 
         super().partial_update(request, *args, **kwargs)
