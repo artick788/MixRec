@@ -7,5 +7,4 @@ def integrity_check():
     response = requests.get(url)
 
 if __name__ == '__main__':
-    integrity_check()
-    # precision_recall_curve()
+    precision_recall_curve()

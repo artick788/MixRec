@@ -48,6 +48,7 @@ export default function SongCard(props) {
                   <p>Genre: {song.genre}</p>
                   <p>Album: {song.album}</p>
                   <p>Duration: {song.duration}</p>
+                  <p>ID: {song.song_id}</p>
                 </div>
               </Grid>
               <Grid item xs={6}>
