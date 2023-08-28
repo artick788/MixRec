@@ -2,14 +2,16 @@ import requests
 from matplotlib import pyplot as plt
 
 
-def precision_recall_TF_IDF(con, k: int = 11):
+def precision_recall(con: dict, alg: dict, k: int = 11):
     url: str = "http://localhost:8000/apiv1/search/"
     body: dict = {
         "query": con["query"],
-        "method": "TF-IDF",
+        "method": alg["method"],
         "k": 10,
-        "similarity_method": "Cosine"
     }
+
+    if alg["method"] == "TF-IDF":
+        body["similarity_method"] = alg["similarity_method"]
 
     recall_to_precision: dict = {
         'recall': [],
@@ -31,7 +33,7 @@ def precision_recall_TF_IDF(con, k: int = 11):
 
 
 def precision_recall_curve():
-    test_cases = [
+    queries = [
         {
             'query': 'Dimension Drum & Bass',
             'relevant_songs': [
@@ -86,13 +88,24 @@ def precision_recall_curve():
         }
     ]
 
-    plt.figure()
-    plt.title("Precision-Recall Curve")
-    plt.xlabel("Recall")
-    plt.ylabel("Precision")
-    for case in test_cases:
-        recall_to_precision = precision_recall_TF_IDF(case, 11)
-        plt.plot(list(recall_to_precision['recall']), list(recall_to_precision['precision']), label=case['query'], marker='o', linestyle='-')
+    configs = [
+        {
+            'method': 'TF-IDF',
+            'similarity_method': 'Cosine'
+        },
+        {
+            'method': 'LSI',
+        }
+    ]
 
-    plt.legend()
-    plt.show()
+    for config in configs:
+        plt.figure()
+        plt.title("Precision-Recall Curve: " + config['method'])
+        plt.xlabel("Recall")
+        plt.ylabel("Precision")
+        for q in queries:
+            recall_to_precision = precision_recall(q, config, 11)
+            plt.plot(list(recall_to_precision['recall']), list(recall_to_precision['precision']), label=q['query'], marker='o', linestyle='-')
+
+        plt.legend()
+        plt.show()

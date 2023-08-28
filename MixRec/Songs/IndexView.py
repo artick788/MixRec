@@ -5,10 +5,13 @@ from .Decorators import catch_exceptions
 from .Serializer import SongSerializer
 from .models import Song
 from .Index import Index
+from .TermAssociations import get_assocations
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel, cosine_similarity, euclidean_distances, manhattan_distances
 from gensim import corpora, models, similarities
+
+from nltk.stem import PorterStemmer
 
 import joblib
 
@@ -54,12 +57,9 @@ class IndexEP(ModelViewSet):
             description = song.description.replace(",", "").replace("(", "").replace(")", "").lower()
 
             doc = artist + " " + title + " " + album + " " + genre + " " + description + " " + song.camelot_key
-            if song.popularity > 60:
-                doc += " " + "popular"
-            if song.energy > 75 and song.danceability > 75:
-                doc += " " + "danceable" + " " + "hype"
-            elif song.energy > 75 and song.speechiness > 20:
-                doc += " " + "hype"
+            associations = get_assocations(song)
+            for association in associations:
+                doc += " " + association
 
             new_index.concatenations.append(doc)
             new_index.tokenized_concatenations.append(
