@@ -18,7 +18,7 @@ import joblib
 
 def adjust_key_score(song_key, preferred_key):
     key_diff = (int(song_key[0])) - (int(preferred_key[0])) % 12
-    return -6 * key_diff + 0.20
+    return -0.08 * key_diff + 0.20
 
 
 def calculate_key_scores(songs: [], scores: [float], preferred_key) -> list:
