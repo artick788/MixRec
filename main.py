@@ -6,7 +6,8 @@ import requests
 def integrity_check():
     url = "http://localhost:8000/apiv1/integrity/"
     response = requests.get(url)
+    print(response.json())
 
 
 if __name__ == '__main__':
-    precision_recall_curve()
+    integrity_check()

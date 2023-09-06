@@ -28,8 +28,8 @@ class SongEP(ModelViewSet):
         if os.path.exists(settings.MUSIC_DIR):
             # sort music by genre
             if genre not in os.listdir(settings.MUSIC_DIR):
-                os.mkdir(settings.MUSIC_DIR + "/" + genre)
-            file_name = settings.MUSIC_DIR + "/" + genre + "/" + artist + " - " + title + ".mp3"
+                os.mkdir(settings.MUSIC_DIR + "\\" + genre)
+            file_name = settings.MUSIC_DIR + "\\" + genre + "\\" + artist + " - " + title + ".mp3"
             if os.path.isfile(file_name):
                 raise Exception("File already exists")
         else:
@@ -103,7 +103,7 @@ class SongEP(ModelViewSet):
         if song.genre != request.data["genre"] or song.artist != request.data["artist"] or song.title != request.data["title"]:
             # update file on disk
             old_file_name = song.file_location
-            new_file_name = settings.MUSIC_DIR + "/" + request.data["genre"] + "/" + request.data["artist"] + " - " + request.data["title"] + ".mp3"
+            new_file_name = settings.MUSIC_DIR + "\\" + request.data["genre"] + "\\" + request.data["artist"] + " - " + request.data["title"] + ".mp3"
             os.rename(old_file_name, new_file_name)
             song.file_location = new_file_name
             song.save()

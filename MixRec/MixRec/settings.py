@@ -15,7 +15,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MUSIC_DIR = "../MusicLib"
+MUSIC_DIR = "E:\\OneDrive\\Music\\DJ"
 INDEX_PATH = "../index.plk"
 
 # Quick-start development settings - unsuitable for production

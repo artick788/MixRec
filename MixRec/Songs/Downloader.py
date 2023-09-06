@@ -1,7 +1,7 @@
 import uuid
 import yt_dlp
 import ffmpeg
-import os
+import shutil
 
 
 def download_youtube(url: str, file_path: str):
@@ -37,4 +37,4 @@ def download_youtube(url: str, file_path: str):
         tries -= 1
 
     # rename
-    os.rename(temp_name + ".mp3", file_path)
+    shutil.move(temp_name + ".mp3", file_path)
